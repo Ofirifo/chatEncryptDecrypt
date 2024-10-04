@@ -1,4 +1,4 @@
-import { Icon, Icons } from "@/components/Icons";
+import { Logo, Logos } from "@/components/logo";
 import SignOutButton from "@/components/SignOutButton";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
@@ -10,8 +10,6 @@ import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOption
 import { fetchRedis } from "@/helpers/redis";
 import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
 import SidebarChatList from "@/components/SidebarChatList";
-// import MobileChatLayout from "@/components/MobileChatLayout";
-import { SidebarOption } from "@/types/typings";
 
 interface LayoutProps {
   children: ReactNode;
@@ -28,7 +26,7 @@ const sidebarOptions: SidebarOption[] = [
     id: 1,
     name: "Add friend",
     href: "/dashboard/add",
-    Icon: "UserPlus",
+    Logo: "UserPlus",
   },
 ];
 
@@ -37,7 +35,7 @@ const Layout = async ({ children }: LayoutProps) => {
   if (!session) notFound();
 
   const friends = await getFriendsByUserId(session.user.id);
-  console.log("friends", friends);
+  // console.log("friends", friends);
 
   const unseenRequestCount = (
     (await fetchRedis(
@@ -50,7 +48,7 @@ const Layout = async ({ children }: LayoutProps) => {
     <div className="w-full flex h-screen">
       <div className="hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
         <Link href="/dashboard" className="flex h-16 shrink-0 items-center">
-          <Icons.Logo className="h-8 w-auto text-indigo-600" />
+          <Logos.Logo className="h-8 w-auto text-indigo-600" />
         </Link>
 
         {friends.length > 0 ? (
@@ -61,9 +59,18 @@ const Layout = async ({ children }: LayoutProps) => {
 
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-4">
-            <li>
-              <SidebarChatList sessionId={session.user.id} friends={friends} />
-            </li>
+            <ul>
+              {friends.map((friend, index) => (
+                <li key={friend.id} className="flex items-center">
+                  {/* Display the index + 1 (to start from 1) on the left */}
+                  <span className="mr-2 text-gray-500">{index + 1}</span>
+                  <SidebarChatList
+                    sessionId={session.user.id}
+                    friends={friends}
+                  />
+                </li>
+              ))}
+            </ul>
             <li>
               <div className="text-xs font-semibold leading-6 text-black bg-blue-300 ">
                 Our Functions:
@@ -71,7 +78,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
               <ul role="list" className="-mx-2 mt-2 space-y-1">
                 {sidebarOptions.map((option) => {
-                  const Icon = Icons[option.Icon];
+                  const Logo = Logos[option.Logo];
                   return (
                     <li key={option.id}>
                       <Link
@@ -79,7 +86,7 @@ const Layout = async ({ children }: LayoutProps) => {
                         className="text-gray-700 hover:text-indigo-600 hover:bg-gray-50 group flex gap-3 rounded-md p-2 text-sm leading-6 font-semibold"
                       >
                         <span className="text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white">
-                          <Icon className="h-4 w-4" />
+                          <Logo className="h-4 w-4" />
                         </span>
 
                         <span className="truncate">{option.name}</span>
@@ -99,7 +106,7 @@ const Layout = async ({ children }: LayoutProps) => {
 
             <li className="-mx-6 mt-auto flex items-center">
               <div className="flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">
-                <div className="relative h-8 w-8 bg-gray-50">
+                <div className="relative h-8 w-8 bg-blue-50">
                   <Image
                     fill
                     referrerPolicy="no-referrer"
@@ -109,7 +116,7 @@ const Layout = async ({ children }: LayoutProps) => {
                   />
                 </div>
 
-                <span className="sr-only">Your profile</span>
+                <span className="sr-only">Main Page</span>
                 <div className="flex flex-col">
                   <span aria-hidden="true">{session.user.name}</span>
                   <span className="text-xs text-zinc-400" aria-hidden="true">
@@ -118,7 +125,13 @@ const Layout = async ({ children }: LayoutProps) => {
                 </div>
               </div>
 
-              <SignOutButton className="h-full aspect-square" />
+              <div className="flex items-center justify-center p-4">
+                <SignOutButton className="relative flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transition-all duration-300 hover:scale-110 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-600 hover:shadow-lg">
+                  <span className="absolute inset-0 flex items-center justify-center text-lg font-bold">
+                    Sign Out
+                  </span>
+                </SignOutButton>
+              </div>
             </li>
           </ul>
         </nav>

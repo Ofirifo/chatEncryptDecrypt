@@ -4,7 +4,6 @@ import axios from "axios";
 import { FC, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import TextareaAutosize from "react-textarea-autosize";
-import Button from "./ui/Button";
 
 interface ChatInputProps {
   chatPartner: User;
@@ -13,12 +12,10 @@ interface ChatInputProps {
 
 const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  // const [isLoading, setIsLoading] = useState<boolean>(false)
   const [input, setInput] = useState<string>("");
 
   const sendMessage = async () => {
     if (!input) return;
-    // setIsLoading(true)
 
     try {
       await axios.post("/api/message/send", { text: input, chatId });
@@ -26,8 +23,6 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
       textareaRef.current?.focus();
     } catch {
       toast.error("Something went wrong. Please try again later.");
-    } finally {
-      // setIsLoading(false)
     }
   };
 
@@ -60,11 +55,7 @@ const ChatInput: FC<ChatInputProps> = ({ chatPartner, chatId }) => {
         </div>
 
         <div className="absolute right-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
-          <div className="flex-shrin-0">
-            {/* <Button isLoading={isLoading} onClick={sendMessage} type='submit'>
-              Post
-            </Button> */}
-          </div>
+          <div className="flex-shrin-0"></div>
         </div>
       </div>
     </div>
