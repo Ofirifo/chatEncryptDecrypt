@@ -7,6 +7,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FC, ReactNode } from "react";
 import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOptions";
+import DecryptionRequestSidebarOptions from "@/components/Decryption";
 import { fetchRedis } from "@/helpers/redis";
 import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
 import SidebarChatList from "@/components/SidebarChatList";
@@ -100,6 +101,10 @@ const Layout = async ({ children }: LayoutProps) => {
                     sessionId={session.user.id}
                     initialUnseenRequestCount={unseenRequestCount}
                   />
+                </li>
+
+                <li>
+                  <DecryptionRequestSidebarOptions msg={session.user.id} />
                 </li>
               </ul>
             </li>

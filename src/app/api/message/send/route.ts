@@ -13,7 +13,7 @@ const ENCRYPTION_KEY = process.env.SECRET_KEY;
 const IV_LENGTH = 16; // For AES, this is always 16
 
 // Encrypt function
-function encrypt(text: string) {
+export function encrypt(text: string) {
   // Ensures unique encryption even if the same input is encrypted multiple times.
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(
@@ -27,7 +27,7 @@ function encrypt(text: string) {
 }
 
 // Decrypt function
-function decrypt(text: string) {
+export function decrypt(text: string) {
   const textParts = text.split(":");
   const iv = Buffer.from(textParts.shift() as string, "hex");
   const encryptedText = Buffer.from(textParts.join(":"), "hex");
@@ -48,22 +48,22 @@ export async function POST(req: Request) {
 
     if (!session) return new Response("Unauthorized", { status: 401 });
 
-    // console.log("0:", session.user.id);
-    // const encryptedSessionUserId = encrypt(session.user.id);
-    // const encryptedIdToAdd = encrypt(chatId);
-    // console.log("1:", encryptedSessionUserId);
-    // console.log("2:", encryptedIdToAdd);
-    // const [userRaw1, friendRaw1] = (await Promise.all([
-    //   fetchRedis("get", `user:${session.user.id}`),
-    //   fetchRedis("get", `user:${chatId}`),
-    // ])) as [string, string];
+    console.log("0:", session.user.id);
+    const encryptedSessionUserId = encrypt(session.user.id);
+    const encryptedIdToAdd = encrypt(chatId);
+    console.log("1:", encryptedSessionUserId);
+    console.log("2:", encryptedIdToAdd);
+    const [userRaw1, friendRaw1] = (await Promise.all([
+      fetchRedis("get", `user:${session.user.id}`),
+      fetchRedis("get", `user:${chatId}`),
+    ])) as [string, string];
 
-    // console.log("2a:", userRaw1);
-    // const encryptTry1 = encrypt(userRaw1);
-    // console.log("2a1:", encryptTry1);
-    // const decryptTry1 = decrypt(encryptTry1);
-    // console.log("2a2:", decryptTry1);
-    // console.log("2b:", friendRaw1);
+    console.log("2a:", userRaw1);
+    const encryptTry1 = encrypt(userRaw1);
+    console.log("2a1:", encryptTry1);
+    const decryptTry1 = decrypt(encryptTry1);
+    console.log("2a2:", decryptTry1);
+    console.log("2b:", friendRaw1);
     // // Decrypt fetched user data
     // const decryptUser = decrypt(encryptedSessionUserId);
     // // const decryptFriend = JSON.parse(decrypt(friendRaw1)) as User;
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
     await pusherServer.trigger(
       toPusherKey(`chat:${chatId}`),
       "incoming-message",
-      message
+      encryptMessage
     );
 
     // This is when we are in a different room and we suddendly get a message, then it is encrypted (You can see the message as usual when you enter the room)
@@ -132,7 +132,7 @@ export async function POST(req: Request) {
     // all valid, send the message
     await db.zadd(`chat:${chatId}:messages`, {
       score: timestamp,
-      member: JSON.stringify(message),
+      member: JSON.stringify(encryptMessage),
     });
 
     return new Response("OK");
