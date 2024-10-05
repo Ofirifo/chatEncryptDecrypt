@@ -115,7 +115,7 @@ export async function POST(req: Request) {
     await pusherServer.trigger(
       toPusherKey(`chat:${chatId}`),
       "incoming-message",
-      encryptMessage
+      message
     );
 
     // This is when we are in a different room and we suddendly get a message, then it is encrypted (You can see the message as usual when you enter the room)

@@ -103,9 +103,9 @@ const Layout = async ({ children }: LayoutProps) => {
                   />
                 </li>
 
-                <li>
+                {/* <li>
                   <DecryptionRequestSidebarOptions msg={session.user.id} />
-                </li>
+                </li> */}
               </ul>
             </li>
 
