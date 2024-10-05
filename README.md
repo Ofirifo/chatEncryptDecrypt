@@ -14,6 +14,6 @@ Realtime messaging with adding friends and sending friend requests via email wit
 ## Things to install before:
 
 - OAuth for the user (We explained in the document how to do it)
-- DB (we use Redis = The Real-time Data Platform)
+- DB (we use Upstash Redis = The Real-time Data Platform)
 - Pusher
 - Secret Key for Encryption
